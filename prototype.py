@@ -2,17 +2,17 @@ import pygame, random
 
 pygame.init()
 
-def create_note(placement: int):
+def create_note(placement: int, y_position: int):
     rect = pygame.Rect(0, 0, 50, 50)
     match placement:
         case 1:
-            rect.center = (125, 0)
+            rect.center = (125, y_position)
         case 2:
-            rect.center = (375, 0)
+            rect.center = (375, y_position)
         case 3:
-            rect.center = (625, 0)
+            rect.center = (625, y_position)
         case 4:
-            rect.center = (875, 0)
+            rect.center = (875, y_position)
     note = pygame.Surface(rect.size)
     note.fill((255, 255, 255))
 
@@ -20,7 +20,7 @@ def create_note(placement: int):
 
 pygame.mixer.init()
 
-pygame.mixer.music.load('assets/Live and Learn - Sonic Adventure 2 [OST] [ ezmp3.cc ].mp3')
+pygame.mixer.music.load('assets/Pokemon BlueRed - Route 1 [ ezmp3.cc ].mp3')
 pygame.mixer.music.play()
 
 clock = pygame.time.Clock()
@@ -39,8 +39,8 @@ rect4.center = (875, 450)
 
 notes = []
 my_note_chart = [
-    [1, 0, 0, 0],
-    [1, 0, 0, 0],
+    [1, 0, 1, 0],
+    [1, 0, 1, 0],
     [0, 0, 1, 0],
     [0, 0, 1, 0],
     [0, 1, 0, 0],
@@ -880,7 +880,9 @@ while running:
     keys = pygame.key.get_pressed()
     for i in range(len(notes)):
         l,m = notes[i]
+
         accuracy = abs(m.centery - rect1.centery)
+
         if keys[pygame.K_a]:
             print(f"frames: {frames}")
             if m.centerx - rect1.centerx == 0 and rect1.colliderect(m):
@@ -914,6 +916,7 @@ while running:
                 break
             else:
                 print("MISS!")
+    
     score_surf = font.render(f"Score: {score}", True, (255, 255, 255))
     frames += 1
 
@@ -922,22 +925,37 @@ while running:
     # if frames == 1 or frames / 21 % 1 == 0:
     #     notes.append(create_note(position))
     
-    # if frames == 1:
-    #     notes.append(create_note(1))
+    if frames == 1:
+        notes.append(create_note(1, 290))
+    
 
-    if frames >= 117:
-        frames_in_song += 1
-        if frames_in_song % 21 == 0:
-            i,j,k,l = my_note_chart[beat_index]
-            beat_index += 1
-            if i == 1:
-                notes.append(create_note(1))
-            if j == 1:
-                notes.append(create_note(2))
-            if k == 1:
-                notes.append(create_note(3))
-            if l == 1:
-                notes.append(create_note(4))
+    # if frames >= 117:
+    #     frames_in_song += 1
+    #     if frames_in_song % 21 == 0:
+    #         i,j,k,l = my_note_chart[beat_index]
+    #         beat_index += 1
+    #         if i == 1:
+    #             notes.append(create_note(1))
+    #         if j == 1:
+    #             notes.append(create_note(2))
+    #         if k == 1:
+    #             notes.append(create_note(3))
+    #         if l == 1:
+    #             notes.append(create_note(4))
+    print(f"Note delay: {note_delay_time} frames")
+
+
+    if frames % 128 == 0:
+        i,j,k,l = my_note_chart[beat_index]
+        beat_index += 1
+        if i == 1:
+            notes.append(create_note(1, 0))
+        if j == 1:
+            notes.append(create_note(2, 0))
+        if k == 1:
+            notes.append(create_note(3, 0))
+        if l == 1:
+            notes.append(create_note(4, 0))
     # print(f"Note delay: {note_delay_time} frames")
 
     screen.blit(surf1, (rect1.x, rect1.y))
@@ -945,8 +963,8 @@ while running:
     screen.blit(surf3, (rect3.x, rect3.y))
     screen.blit(surf4, (rect4.x, rect4.y))
     for l,m in notes:
-        # if m.centery < rect1.centery:
-        #         note_delay_time += 1
+        if m.centery < rect1.centery:
+                note_delay_time += 1
         m.y += 5
         screen.blit(l, (m.x, m.y))
     screen.blit(score_surf, (450, 0))
